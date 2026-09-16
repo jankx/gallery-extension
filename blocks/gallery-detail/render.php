@@ -147,6 +147,45 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
         return ob_get_clean();
     }
 
+    if ($preset === 'mosaic') {
+        ?>
+        <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" data-post-id="<?php echo esc_attr($post_id); ?>">
+            <div class="jankx-gallery-mosaic">
+                <?php
+                // Display max 5 images
+                $mosaic_images = array_slice($images, 0, 5);
+                foreach ($mosaic_images as $index => $img): 
+                    $imgSize = (!empty($img['id']) && is_numeric($img['id'])) ? wp_get_attachment_image_src((int)$img['id'], $imageSize) : null;
+                    $imgW = is_array($imgSize) && isset($imgSize[1]) ? (int)$imgSize[1] : null;
+                    $imgH = is_array($imgSize) && isset($imgSize[2]) ? (int)$imgSize[2] : null;
+                    $class = $index === 0 ? 'mosaic-main' : 'mosaic-thumb';
+                ?>
+                    <div class="jankx-gallery-mosaic-item <?php echo esc_attr($class); ?>">
+                        <img
+                            class="ls-no-lazy"
+                            src="<?php echo esc_url($img['url']); ?>"
+                            data-no-lazy="1"
+                            <?php if (!empty($img['srcset'])): ?>srcset="<?php echo esc_attr($img['srcset']); ?>"<?php endif; ?>
+                            <?php if (!empty($img['sizes'])): ?>sizes="<?php echo esc_attr($img['sizes']); ?>"<?php endif; ?>
+                            <?php if ($imgW): ?>width="<?php echo esc_attr($imgW); ?>"<?php endif; ?>
+                            <?php if ($imgH): ?>height="<?php echo esc_attr($imgH); ?>"<?php endif; ?>
+                            alt="<?php echo esc_attr($img['alt']); ?>"
+                            loading="lazy"
+                            decoding="async"
+                        />
+                        <?php if ($index === 4 && count($images) > 5): ?>
+                            <div class="mosaic-more">
+                                <span>+<?php echo count($images) - 5; ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
     $main = $images[0];
     $is_single = count($images) <= 1;
     if ($is_single) {

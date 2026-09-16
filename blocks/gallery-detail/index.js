@@ -15,7 +15,36 @@
   var TextControl = wp.components && wp.components.TextControl ? wp.components.TextControl : null;
   var SelectControl = wp.components && wp.components.SelectControl ? wp.components.SelectControl : null;
   var RangeControl = wp.components && wp.components.RangeControl ? wp.components.RangeControl : null;
+  var Button = wp.components && wp.components.Button ? wp.components.Button : null;
+  var Tooltip = wp.components && wp.components.Tooltip ? wp.components.Tooltip : null;
   var apiFetch = wp.apiFetch;
+
+  var LAYOUT_ICONS = {
+    'classic': el('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
+      el('rect', { x: 2, y: 2, width: 20, height: 12, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 2, y: 16, width: 4, height: 4, fill: 'currentColor' }),
+      el('rect', { x: 7.33, y: 16, width: 4, height: 4, fill: 'currentColor' }),
+      el('rect', { x: 12.66, y: 16, width: 4, height: 4, fill: 'currentColor' }),
+      el('rect', { x: 18, y: 16, width: 4, height: 4, fill: 'currentColor' })
+    ),
+    'zigzag': el('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
+      el('rect', { x: 4, y: 3, width: 10, height: 8, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 10, y: 13, width: 10, height: 8, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 })
+    ),
+    'grid': el('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
+      el('rect', { x: 3, y: 3, width: 8, height: 8, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 13, y: 3, width: 8, height: 8, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 3, y: 13, width: 8, height: 8, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 13, y: 13, width: 8, height: 8, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 })
+    ),
+    'mosaic': el('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
+      el('rect', { x: 2, y: 2, width: 10, height: 20, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 13, y: 2, width: 4, height: 9.5, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 18, y: 2, width: 4, height: 9.5, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 13, y: 12.5, width: 4, height: 9.5, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 }),
+      el('rect', { x: 18, y: 12.5, width: 4, height: 9.5, fill: 'currentColor', fillOpacity: 0.2, stroke: 'currentColor', strokeWidth: 1.5 })
+    )
+  };
 
   function Edit(props) {
     var blockProps = useBlockProps({ className: 'jankx-gallery-detail-editor' });
@@ -77,16 +106,28 @@
           min: 1, max: 64,
           onChange: setAttr('thumbAspectHeight')
         }),
-        el(SelectControl, {
-          label: __('Preset', 'jankx'),
-          value: a.preset || 'classic',
-          options: [
-            { label: __('Classic', 'jankx'), value: 'classic' },
-            { label: __('Zigzag', 'jankx'), value: 'zigzag' },
-            { label: __('Grid', 'jankx'), value: 'grid' },
-          ],
-          onChange: setAttr('preset')
-        }),
+        el('div', { className: 'jankx-layout-chooser', style: { marginBottom: '24px', marginTop: '16px' } },
+          el('label', { className: 'components-base-control__label', style: { display: 'block', marginBottom: '8px' } }, __('Display Gallery (Preset)', 'jankx')),
+          el('div', { className: 'jankx-layout-chooser__group', style: { display: 'flex', gap: '8px' } },
+            [
+              { label: __('Classic', 'jankx'), value: 'classic' },
+              { label: __('Zigzag', 'jankx'), value: 'zigzag' },
+              { label: __('Grid', 'jankx'), value: 'grid' },
+              { label: __('Mosaic', 'jankx'), value: 'mosaic' }
+            ].map(function (option) {
+              var isSelected = (a.preset || 'classic') === option.value;
+              return el(Tooltip, { text: option.label, key: option.value },
+                el(Button, {
+                  isPressed: isSelected,
+                  onClick: function () { setAttr('preset')(option.value); },
+                  className: 'jankx-layout-chooser__button',
+                  variant: isSelected ? 'primary' : 'secondary',
+                  style: { padding: '8px', height: 'auto', border: isSelected ? '1px solid transparent' : '1px solid #ccc', borderRadius: '4px' }
+                }, LAYOUT_ICONS[option.value] || option.label)
+              );
+            })
+          )
+        ),
         a.preset === 'grid' && el(SelectControl, {
           label: __('Grid Aspect Ratio', 'jankx'),
           value: a.gridAspectRatio || 'landscape',
