@@ -16,6 +16,7 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
     $autoplaySpeed = isset($attributes['autoplaySpeed']) && is_numeric($attributes['autoplaySpeed']) ? (int)$attributes['autoplaySpeed'] : 3000;
     $preset = isset($attributes['preset']) && is_string($attributes['preset']) ? $attributes['preset'] : 'classic';
     $thumbWidth = isset($attributes['thumbWidth']) && is_numeric($attributes['thumbWidth']) ? (int)$attributes['thumbWidth'] : 140;
+    $enableLightbox = isset($attributes['enableLightbox']) ? (bool)$attributes['enableLightbox'] : false;
     $post_id = 0;
     if (is_object($block) && isset($block->context) && is_array($block->context) && !empty($block->context['postId'])) {
         $post_id = (int)$block->context['postId'];
@@ -84,14 +85,17 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
     }
     if ($preset === 'zigzag') {
         ?>
-        <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" data-post-id="<?php echo esc_attr($post_id); ?>">
-            <?php foreach ($images as $img): ?>
+        <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" 
+             data-post-id="<?php echo esc_attr($post_id); ?>"
+             data-enable-lightbox="<?php echo $enableLightbox ? '1' : '0'; ?>"
+             data-gallery-images="<?php echo esc_attr(wp_json_encode($images)); ?>">
+            <?php foreach ($images as $index => $img): ?>
                 <?php 
                 $imgSize = (!empty($img['id']) && is_numeric($img['id'])) ? wp_get_attachment_image_src((int)$img['id'], $imageSize) : null;
                 $imgW = is_array($imgSize) && isset($imgSize[1]) ? (int)$imgSize[1] : null;
                 $imgH = is_array($imgSize) && isset($imgSize[2]) ? (int)$imgSize[2] : null;
                 ?>
-                <div class="jankx-gallery-item">
+                <div class="jankx-gallery-item" data-index="<?php echo $index; ?>">
                     <img
                         class="ls-no-lazy"
                         src="<?php echo esc_url($img['url']); ?>"
@@ -120,14 +124,16 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
         ?>
         <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?> grid-ratio-<?php echo esc_attr($gridAspectRatio); ?>" 
              data-post-id="<?php echo esc_attr($post_id); ?>"
+             data-enable-lightbox="<?php echo $enableLightbox ? '1' : '0'; ?>"
+             data-gallery-images="<?php echo esc_attr(wp_json_encode($images)); ?>"
              style="--grid-columns: <?php echo esc_attr($gridColumns); ?>;">
-            <?php foreach ($images as $img): ?>
+            <?php foreach ($images as $index => $img): ?>
                 <?php 
                 $imgSize = (!empty($img['id']) && is_numeric($img['id'])) ? wp_get_attachment_image_src((int)$img['id'], $imageSize) : null;
                 $imgW = is_array($imgSize) && isset($imgSize[1]) ? (int)$imgSize[1] : null;
                 $imgH = is_array($imgSize) && isset($imgSize[2]) ? (int)$imgSize[2] : null;
                 ?>
-                <div class="jankx-gallery-grid-item">
+                <div class="jankx-gallery-grid-item" data-index="<?php echo $index; ?>">
                     <img
                         class="ls-no-lazy"
                         src="<?php echo esc_url($img['url']); ?>"
@@ -149,7 +155,10 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
 
     if ($preset === 'mosaic') {
         ?>
-        <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" data-post-id="<?php echo esc_attr($post_id); ?>">
+        <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" 
+             data-post-id="<?php echo esc_attr($post_id); ?>"
+             data-enable-lightbox="<?php echo $enableLightbox ? '1' : '0'; ?>"
+             data-gallery-images="<?php echo esc_attr(wp_json_encode($images)); ?>">
             <div class="jankx-gallery-mosaic">
                 <?php
                 // Display max 5 images
@@ -160,7 +169,7 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
                     $imgH = is_array($imgSize) && isset($imgSize[2]) ? (int)$imgSize[2] : null;
                     $class = $index === 0 ? 'mosaic-main' : 'mosaic-thumb';
                 ?>
-                    <div class="jankx-gallery-mosaic-item <?php echo esc_attr($class); ?>">
+                    <div class="jankx-gallery-mosaic-item <?php echo esc_attr($class); ?>" data-index="<?php echo $index; ?>">
                         <img
                             class="ls-no-lazy"
                             src="<?php echo esc_url($img['url']); ?>"
@@ -202,6 +211,8 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
         data-post-id="<?php echo esc_attr($post_id ?: 'preview'); ?>"
         data-autoplay="<?php echo $autoplay ? '1' : '0'; ?>"
         data-speed="<?php echo esc_attr($autoplaySpeed); ?>"
+        data-enable-lightbox="<?php echo $enableLightbox ? '1' : '0'; ?>"
+        data-gallery-images="<?php echo esc_attr(wp_json_encode($images)); ?>"
         style="--jg-ratio-w:<?php echo esc_attr($aspectW); ?>;--jg-ratio-h:<?php echo esc_attr($aspectH); ?>;--jg-thumb-ratio-w:<?php echo esc_attr($tAspectW); ?>;--jg-thumb-ratio-h:<?php echo esc_attr($tAspectH); ?>;--jg-thumb-width:<?php echo esc_attr($thumbWidth); ?>px;"
     >
         <div class="jankx-gallery-detail__main">

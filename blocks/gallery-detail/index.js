@@ -147,6 +147,11 @@
       ),
       el(PanelBody, { title: __('Controls', 'jankx'), initialOpen: true },
         el(ToggleControl, {
+          label: __('Enable Lightbox', 'jankx'),
+          checked: !!a.enableLightbox,
+          onChange: setAttr('enableLightbox')
+        }),
+        el(ToggleControl, {
           label: __('Show wishlist', 'jankx'),
           checked: !!a.showWishlist,
           onChange: setAttr('showWishlist')

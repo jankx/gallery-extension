@@ -46,6 +46,10 @@
       "type": "number",
       "default": 140
     },
+    "enableLightbox": {
+      "type": "boolean",
+      "default": false
+    },
     "showWishlist": {
       "type": "boolean",
       "default": true
