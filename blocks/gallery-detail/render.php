@@ -84,6 +84,7 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
         return '';
     }
     if ($preset === 'zigzag') {
+        ob_start();
         ?>
         <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" 
              data-post-id="<?php echo esc_attr($post_id); ?>"
@@ -121,6 +122,7 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
     if ($preset === 'grid') {
         $gridAspectRatio = $attributes['gridAspectRatio'] ?? 'landscape';
         $gridColumns = $attributes['gridColumns'] ?? 4;
+        ob_start();
         ?>
         <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?> grid-ratio-<?php echo esc_attr($gridAspectRatio); ?>" 
              data-post-id="<?php echo esc_attr($post_id); ?>"
@@ -154,6 +156,7 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
     }
 
     if ($preset === 'mosaic') {
+        ob_start();
         ?>
         <div class="jankx-gallery-detail is-style-<?php echo esc_attr($preset); ?>" 
              data-post-id="<?php echo esc_attr($post_id); ?>"
