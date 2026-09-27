@@ -41,6 +41,17 @@ function jankx_gallery_detail_render($attributes = [], $content = '', $block = n
     if ($post_id) {
         $showFeaturedImage = isset($attributes['showFeaturedImage']) ? (bool)$attributes['showFeaturedImage'] : true;
         $images = \Jankx\Extensions\GalleryExtension::getGallery($post_id, $imageSize, $thumbSize, $showFeaturedImage);
+
+        /**
+         * Filter the gallery images array for the gallery-detail block.
+         *
+         * @param array  $images       Array of image data arrays (id, url, srcset, sizes, thumb, alt).
+         * @param int    $post_id      The current post ID.
+         * @param string $imageSize    The requested image size slug.
+         * @param string $thumbSize    The requested thumbnail size slug.
+         * @param bool   $showFeaturedImage Whether the featured image is included.
+         */
+        $images = apply_filters('jankx/gallery_detail/images', $images, $post_id, $imageSize, $thumbSize, $showFeaturedImage);
     }
     if (empty($images) && $isEditorRequest) {
         $attachments = get_posts([
